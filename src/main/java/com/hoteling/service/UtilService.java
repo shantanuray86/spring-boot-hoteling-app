@@ -125,7 +125,8 @@ public class UtilService {
 	}
 
 	
-	/** This function provides all the guests who are below 35 years 
+	/** 
+	* This function provides all the guests who are below 35 years 
 	* Guest details and the room details that he/she has booked
 	* @param 
 	*/
@@ -139,11 +140,29 @@ public class UtilService {
 		g_ =guests.stream().filter(s->Integer.parseInt(s.getAge())<35)
 		.sorted((a1,a2)->a1.getAge().compareTo(a2.getAge()))
 		.collect(Collectors.toList());
-		
-		
-		
+			
 		return g_;
 		
+	}
+	
+	/** 
+	* This function provides all the guests who are below 18 years with a discount of 10% on room rent 
+	* @Response Guest details and the room details that he/she has booked
+	* @param Nil
+	*/
+	
+	public List<Object> discountToYoungGuest()
+	{
+		
+		List<Guest> guests = gr.findAll();
+		List<Object> g_ = new ArrayList<>();
+				
+		g_ = guests.stream().filter(s->Integer.parseInt(s.getAge())<18)
+		     .collect(Collectors.toList());
+			//g_.stream().forEach(t->t.put());
+		return g_;
 		
 	}
+	
+	
 }
