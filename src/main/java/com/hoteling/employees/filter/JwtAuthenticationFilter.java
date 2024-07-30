@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+
 import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
@@ -26,12 +28,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 JwtService jwtService;
 	
 	@Autowired
+HandlerExceptionResolver handlerExceptionResolver;
+	
+	@Autowired
 UserDetailsServiceImp userDetailsService;
 
 
-//	    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsServiceImp userDetailsService) {
+//	    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsServiceImp userDetailsService,HandlerExceptionResolver handlerExceptionResolver) {
 //	        this.jwtService = jwtService;
 //	        this.userDetailsService = userDetailsService;
+//	        this.handlerExceptionResolver = handlerExceptionResolver;
 //	    }
 
 	    @Override
@@ -42,12 +48,15 @@ UserDetailsServiceImp userDetailsService;
 	            throws ServletException, IOException {
 
 	        String authHeader = request.getHeader("Authorization");
+	        
+	        
 
 	        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-	            filterChain.doFilter(request,response);
+	           filterChain.doFilter(request,response);
 	            return;
 	        }
 
+	        try {
 	        String token = authHeader.substring(7);
 	        String username = jwtService.extractUsername(token);
 
@@ -69,7 +78,9 @@ UserDetailsServiceImp userDetailsService;
 	            }
 	        }
 	        filterChain.doFilter(request, response);
-
+	        } catch (Exception exception) {
+	            handlerExceptionResolver.resolveException(request, response, null, exception);
+	        }
 
 	    }
 }
