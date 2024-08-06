@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.hoteling.employees.exceptions.Status;
 import com.hoteling.employees.service.JwtService;
 import com.hoteling.employees.service.UserDetailsServiceImp;
 
@@ -20,10 +22,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	
-	
+	private Gson gson = new Gson();
 	@Autowired
 JwtService jwtService;
 	
@@ -52,7 +55,31 @@ UserDetailsServiceImp userDetailsService;
 	        
 
 	        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-	           filterChain.doFilter(request,response);
+
+        	System.out.println(request.getRequestURI());
+        	String url = request.getRequestURI();
+        	
+	        if(url.equals("/register") || url.equals("/login")) {
+	        	   System.out.println("drrtdd"+ request.getRequestURI());
+	        	   filterChain.doFilter(request,response);
+	           }else {
+	        	   Status st = new Status();
+	        	   st.setCode("401");
+	               st.setMessage("unauthorized");
+	               st.setStatus("Error");
+	             
+	        	   //response.toString().getWriter().set.write("hehehe Unauthorized");
+	        	   response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+	        	   
+	        	   String employeeJsonString = this.gson.toJson(st);
+
+	               PrintWriter out = response.getWriter();
+	               response.setContentType("application/json");
+	               response.setCharacterEncoding("UTF-8");
+	               out.print(employeeJsonString);
+	               out.flush(); 
+	           }
+
 	            return;
 	        }
 

@@ -20,9 +20,13 @@ import io.jsonwebtoken.security.Keys;
 public class JwtService {
 
 
-    private String secretKey ="4bb6d1dfbafb64a681139d1586b6f1160d18159afd57c8c79136d7490630407c";
-
-    private long accessTokenExpire = 86400000;
+//    private String secretKey ="4bb6d1dfbafb64a681139d1586b6f1160d18159afd57c8c79136d7490630407c";
+//
+//    private long accessTokenExpire = 86400000;
+    @Value("${jwt-secretKey}")
+    private String secretKey ;
+    @Value("${jwt-access-token-expiration}")
+    private long accessTokenExpire ;
 	
     public String generateAccessToken(Employee user) {
         return generateToken(user, accessTokenExpire);
